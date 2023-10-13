@@ -20,7 +20,7 @@ public class LovenderController : MonoBehaviour
         {
             currentSoundIndex = Random.Range(0, sounds.Count);
             audioSource.clip = sounds[currentSoundIndex];
-            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
+            SetFlowerHeightAndColorToAudioIx();
             audioSource.Play();
         }
 
@@ -103,5 +103,11 @@ public class LovenderController : MonoBehaviour
         
         // Then destroy the flower
         Destroy(gameObject);
+    }
+
+    private void SetFlowerHeightAndColorToAudioIx()
+    {
+        lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
+        lovenderVisualController.SetHeight(currentSoundIndex);
     }
 }
