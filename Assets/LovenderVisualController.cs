@@ -10,7 +10,7 @@ public class LovenderVisualController : MonoBehaviour
     public GameObject flower_cooldown_obj;
     public SpriteRenderer flower_patel;
     public AnimationCurve flowerSoundCurve; // Animation curve for the sound
-    private float jumpHeight = 0.5f; // Define how high the flower head jumps
+    public float jumpHeight = 0.5f; // Define how high the flower head jumps
     private bool animating = false;
 
     public void SetColor(Color color)
@@ -23,6 +23,11 @@ public class LovenderVisualController : MonoBehaviour
         StartCoroutine(ScaleFlower(flower_cooldown_obj, timer, 1, 0)); // Scale down over time
     }
 
+    public void SetHeight(int num)
+    {
+        flower_head.transform.localPosition = new Vector3(0,2 + jumpHeight * num,0); // Ensure it's at the final position
+    }
+
     public void FlowerSound()
     {
         StartCoroutine(ScaleFlowerWithCurve(flower_cooldown_obj, 0.2f, flowerSoundCurve)); // Scale up quickly using animation curve
@@ -30,12 +35,12 @@ public class LovenderVisualController : MonoBehaviour
 
     public void FlowerUp()
     {
-        StartCoroutine(FlowerUp(flower_head, 0.5f)); // You can adjust the height value
+        StartCoroutine(FlowerUp(flower_head, jumpHeight)); // You can adjust the height value
     }
 
     public void FlowerDown()
     {
-        StartCoroutine(FlowerDown(flower_head, 0.5f)); // You can adjust the height value
+        StartCoroutine(FlowerDown(flower_head, jumpHeight)); // You can adjust the height value
     }
 
     public void CooldownPatels(float timer)
