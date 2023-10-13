@@ -76,7 +76,7 @@ public class LovenderController : MonoBehaviour
 
             // Visual indication that the sound has changed - next
             lovenderVisualController.FlowerUp(); // Flower jumps up
-            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
         }
         // else do nothing if we're at the last sound
     }
@@ -91,7 +91,7 @@ public class LovenderController : MonoBehaviour
 
             // Visual indication that the sound has changed - previous
             lovenderVisualController.FlowerDown(); // Flower jumps down
-            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
         }
         // else do nothing if we're at the first sound
     }
@@ -107,7 +107,7 @@ public class LovenderController : MonoBehaviour
 
     private void SetFlowerHeightAndColorToAudioIx()
     {
-        lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
+        lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
         lovenderVisualController.SetHeight(currentSoundIndex);
     }
 }

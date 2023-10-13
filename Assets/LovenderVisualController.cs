@@ -12,23 +12,24 @@ public class LovenderVisualController : MonoBehaviour
     public SpriteRenderer flower_patel;
     public AnimationCurve flowerSoundCurve; // Animation curve for the sound
     public float jumpHeight = 0.5f; // Define how high the flower head jumps
-    public float jumpScale = 0.1f; // Define how high the flower head jumps
+    public float jumpScale = 0.2f; // Define how high the flower head jumps
+    public float scale_min, scale_max;
     private bool animating = false;
 
-    public void SetColor(Color color)
+    public void SetColor(Color color,int num)
     {
         flower_patel.color = color;
+        ScaleHead(scale_max - (jumpScale * num));
     }
     public void PlaySpawn(float timer)
     {
-        sorting_group.sortingOrder = Mathf.RoundToInt(transform.position.y) * -1;
+        sorting_group.sortingOrder = Mathf.RoundToInt(transform.parent.transform.position.y) * -1;
         StartCoroutine(ScaleFlower(flower_cooldown_obj, timer, 1, 0)); // Scale down over time
     }
 
     public void SetHeight(int num)
     {
         flower_head.transform.localPosition = new Vector3(0,2 + jumpHeight * num,0);
-        flower_head_scale.transform.localScale = new Vector3(1 - jumpScale * num,1 - jumpScale * num,0);
     }
 
     public void FlowerSound()
@@ -94,10 +95,6 @@ public class LovenderVisualController : MonoBehaviour
         Vector3 startPosition = target.transform.localPosition;
         Vector3 endPosition = new Vector3(startPosition.x, startPosition.y + height, startPosition.z);
         
-        Vector3 startScale = target.transform.localScale;
-        Vector3 endScale = new Vector3(startScale.x - jumpScale, startScale.y - jumpScale, startScale.z);
-
-
         float timeToMove = 0.2f;
         for (float t = 0; t <= 1; t += Time.deltaTime / timeToMove)
         {
@@ -106,7 +103,6 @@ public class LovenderVisualController : MonoBehaviour
         }
 
         target.transform.localPosition = endPosition; // Ensure it's at the final position
-        flower_head_scale.transform.localScale = endScale;
     }
 
     IEnumerator FlowerDown(GameObject target, float height)
@@ -114,9 +110,6 @@ public class LovenderVisualController : MonoBehaviour
         Vector3 startPosition = target.transform.localPosition;
         Vector3 endPosition = new Vector3(startPosition.x, startPosition.y - height, startPosition.z); // Moving down by 'height'
 
-        Vector3 startScale = target.transform.localScale;
-        Vector3 endScale = new Vector3(startScale.x+ jumpScale, startScale.y + jumpScale, startScale.z);
-        
         float timeToMove = 0.2f;
         for (float t = 0; t <= 1; t += Time.deltaTime / timeToMove)
         {
@@ -125,8 +118,12 @@ public class LovenderVisualController : MonoBehaviour
         }
 
         target.transform.localPosition = endPosition; // Ensure it's at the final position
-        flower_head_scale.transform.localScale = endScale;
+    }
 
+    private void ScaleHead(float endScale)
+    {
+        float clamped = Mathf.Clamp(endScale, scale_min, scale_max);
+        flower_head_scale.transform.localScale = new Vector3(clamped, clamped, 0);
     }
 
 }

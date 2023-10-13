@@ -113,6 +113,8 @@ MonoBehaviour:
     m_RotationOrder: 4
   jumpHeight: 0.5
   jumpScale: 0.1
+  scale_min: 0.2
+  scale_max: 1.2
 --- !u!58 &4252427935130898195
 CircleCollider2D:
   m_ObjectHideFlags: 0
