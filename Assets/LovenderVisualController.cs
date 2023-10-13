@@ -1,22 +1,31 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 public class LovenderVisualController : MonoBehaviour
 {
+    public SortingGroup sorting_group;
     public GameObject flower_head;
-    public GameObject flower_patel;
+    public GameObject flower_cooldown_obj;
+    public SpriteRenderer flower_patel;
     public AnimationCurve flowerSoundCurve; // Animation curve for the sound
     private float jumpHeight = 0.5f; // Define how high the flower head jumps
     private bool animating = false;
-    
+
+    public void SetColor(Color color)
+    {
+        flower_patel.color = color;
+    }
     public void PlaySpawn(float timer)
     {
-        StartCoroutine(ScaleFlower(flower_patel, timer, 1, 0)); // Scale down over time
+        sorting_group.sortingOrder = Mathf.RoundToInt(transform.position.y) * -1;
+        StartCoroutine(ScaleFlower(flower_cooldown_obj, timer, 1, 0)); // Scale down over time
     }
 
     public void FlowerSound()
     {
-        StartCoroutine(ScaleFlowerWithCurve(flower_patel, 0.2f, flowerSoundCurve)); // Scale up quickly using animation curve
+        StartCoroutine(ScaleFlowerWithCurve(flower_cooldown_obj, 0.2f, flowerSoundCurve)); // Scale up quickly using animation curve
     }
 
     public void FlowerUp()

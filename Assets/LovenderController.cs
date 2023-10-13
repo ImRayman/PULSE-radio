@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class LovenderController : MonoBehaviour
 {
+    public List<Color> sound_colors;
     public List<AudioClip> sounds;
     public AudioSource audioSource;
     public float timer = 5f; // Timer for sound playing
@@ -17,7 +18,9 @@ public class LovenderController : MonoBehaviour
     {
         if (sounds.Count > 0)
         {
-            audioSource.clip = sounds[Random.Range(0,sounds.Count)];
+            currentSoundIndex = Random.Range(0, sounds.Count);
+            audioSource.clip = sounds[currentSoundIndex];
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
             audioSource.Play();
         }
 
@@ -73,6 +76,7 @@ public class LovenderController : MonoBehaviour
 
             // Visual indication that the sound has changed - next
             lovenderVisualController.FlowerUp(); // Flower jumps up
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
         }
         // else do nothing if we're at the last sound
     }
@@ -87,6 +91,7 @@ public class LovenderController : MonoBehaviour
 
             // Visual indication that the sound has changed - previous
             lovenderVisualController.FlowerDown(); // Flower jumps down
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex]);
         }
         // else do nothing if we're at the first sound
     }
