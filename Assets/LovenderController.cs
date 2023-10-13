@@ -102,7 +102,7 @@ public class LovenderController : MonoBehaviour
         // Perform any necessary cleanup, like stopping audio, animations, etc.
         
         // Then destroy the flower
-        Destroy(gameObject);
+        Destroy(transform.parent.parent.gameObject);
     }
 
     private void SetFlowerHeightAndColorToAudioIx()
