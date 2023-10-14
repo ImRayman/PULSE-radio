@@ -9,11 +9,14 @@ public class LovenderController : MonoBehaviour
     public List<Color> sound_colors;
     public List<AudioClip> sounds;
     public AudioSource audioSource;
-    public float timer = 5f; // Timer for sound playing
+    public float timer = 5f;
     private int currentSoundIndex = 0;
 
-    public LovenderVisualController lovenderVisualController; // Reference to the visual controller
+    public LovenderVisualController lovenderVisualController;
     public CapsuleCollider2D collider;
+    
+    private bool isDragging = false;
+    private float maxDragDistance = 100f; 
 
     private void Awake()
     {
@@ -49,6 +52,38 @@ public class LovenderController : MonoBehaviour
         
         // Visual indication that the flower has spawned
         lovenderVisualController.PlaySpawn(timer); // Pass the same timer for the visual effect
+    }
+    
+    public void HandleDrag(float dragDistance)
+    {
+        // Calculate the drag distance
+
+        // Calculate the drag percentage
+        float dragPercentage = Mathf.Clamp01(dragDistance / maxDragDistance);
+
+        // Determine the sound index based on drag percentage
+        int soundIndex = (int)(dragPercentage * sounds.Count);
+        soundIndex = Mathf.Clamp(soundIndex, 0, sounds.Count - 1);
+
+        // If the sound index has changed, update the sound
+        if (soundIndex != currentSoundIndex)
+        {
+            currentSoundIndex = soundIndex;
+            UpdateSound(dragPercentage);
+        }
+    }
+    
+    private void UpdateSound(float dragPercentage)
+    {
+        if (sounds.Count > 0)
+        {
+            audioSource.clip = sounds[currentSoundIndex];
+            audioSource.Play();
+
+            lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
+            lovenderVisualController.PositionHead(dragPercentage);
+            UpdateColliderHeight();
+        }
     }
 
     private void UpdateColliderHeight()

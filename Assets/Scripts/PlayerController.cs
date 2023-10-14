@@ -7,13 +7,16 @@ public class PlayerController : MonoBehaviour
     public CursorDisplay cursor_display;
     public DeleteAllButton delete_all_button;
     public FlowerSpawner flowerSpawner;
-    public float holdTime = 1.5f; // Time to hold before a flower is deleted
+    public float holdTime = 2f; // Time to hold before a flower is deleted
 
     private LovenderController selectedFlower = null;
     private Vector2 startTouchPosition;
     private bool swipeDetected = false;
     private bool deleteAllButton = false;
     private float holdCounter = 0f; // Tracks the duration of the hold
+    private float delete_all_holdCounter = 0f; // Tracks the duration of the hold
+    private bool isDraggingFlower = false;
+    private float dragDistance = 0;
 
     private void Start()
     {
@@ -22,7 +25,127 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        FlowerInteractions();
+        UIInteractions();
+        FlowerDragging();
+        //FlowerInteractions();
+    }
+
+    private void FlowerDragging()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            startTouchPosition = Input.mousePosition;
+
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+            if (hit.collider != null && hit.collider.gameObject.GetComponent<LovenderController>())
+            {
+                selectedFlower = hit.collider.gameObject.GetComponent<LovenderController>();
+                isDraggingFlower = true;
+            }
+        }
+
+        // Check for the end of a drag
+        if (Input.GetMouseButtonUp(0))
+        {
+            selectedFlower = null;
+            isDraggingFlower = false;
+            
+            // Reset variables
+            holdCounter = 0f;
+            dragDistance = 0;
+            cursor_display.DisplayHolding(0);
+        }
+        
+        // Detect if the left mouse button is held down
+        if (Input.GetMouseButton(0) && dragDistance < 0.1f)
+        {
+            holdCounter += Time.deltaTime;
+
+            if (selectedFlower != null && holdCounter / holdTime > 0.2f)
+            {
+                cursor_display.DisplayHolding(holdCounter / holdTime);
+                cursor_display.GotoPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+            
+            if (holdCounter >= holdTime)
+            {
+                if (selectedFlower != null)
+                {
+                    selectedFlower.HandleLongPress();
+                    selectedFlower = null;
+                }
+
+                holdCounter = 0f;
+                isDraggingFlower = false;
+                cursor_display.DisplayHolding(0);
+            }
+        }
+        else
+        {
+            cursor_display.DisplayHolding(0);
+        }
+
+        // If we're dragging, don't trigger other global interactions
+        if (isDraggingFlower)
+        {
+            dragDistance = Vector3.Distance(startTouchPosition, Input.mousePosition);
+            selectedFlower.HandleDrag(dragDistance);
+        }
+    }
+
+    private void UIInteractions()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            // Cast a ray to the mouse position
+            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+            if (hit.collider != null && hit.collider.gameObject.GetComponent<LovenderController>())
+            {
+                
+            }
+            else if (hit.collider != null && hit.collider.gameObject.tag == "DeleteButton")
+            {
+                deleteAllButton = true;
+            }
+            else if (!EventSystem.current.IsPointerOverGameObject()) // Check if not clicking on UI
+            {
+                // If we're not clicking on a flower, spawn one at the click/tap position
+                flowerSpawner.SpawnFlower(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+        }
+
+        // Detect if the left mouse button is held down
+        if (Input.GetMouseButton(0))
+        {
+            delete_all_holdCounter += Time.deltaTime;
+            if (deleteAllButton)
+            {
+                delete_all_button.DisplayHolding(delete_all_holdCounter / holdTime);
+            }
+
+            if (delete_all_holdCounter >= holdTime)
+            {
+                // If held for long enough, delete the flower and reset
+                if (deleteAllButton)
+                {
+                    flowerSpawner.DeleteAllFlowers();
+                    deleteAllButton = false;
+                }
+                
+                delete_all_holdCounter = 0f;
+                delete_all_button.DisplayHolding(0);
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            // Reset variables
+            deleteAllButton = false;
+            delete_all_holdCounter = 0f; // Reset the hold counter
+            delete_all_button.DisplayHolding(0);
+        }
     }
 
     private void FlowerInteractions()
