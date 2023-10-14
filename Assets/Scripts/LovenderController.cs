@@ -57,7 +57,7 @@ public class LovenderController : MonoBehaviour
         float height = Mathf.Abs(lovenderVisualController.transform.localPosition.y) * 2 * 0.3f + 0.25f;
 
         // Update the collider size while keeping the bottom in place.
-        float yOffset = height / 2 + 0;
+        float yOffset = height / 2 - 0.5f;
         collider.size = new Vector2(collider.size.x, height);
         collider.offset = new Vector2(collider.offset.x, yOffset);
     }

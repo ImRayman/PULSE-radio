@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlayerController : MonoBehaviour
 {
+    public CursorDisplay cursor_display;
+    public DeleteAllButton delete_all_button;
     public FlowerSpawner flowerSpawner;
     public float holdTime = 1.5f; // Time to hold before a flower is deleted
 
@@ -11,6 +14,11 @@ public class PlayerController : MonoBehaviour
     private bool swipeDetected = false;
     private bool deleteAllButton = false;
     private float holdCounter = 0f; // Tracks the duration of the hold
+
+    private void Start()
+    {
+        cursor_display.DisplayHolding(0);
+    }
 
     void Update()
     {
@@ -47,7 +55,18 @@ public class PlayerController : MonoBehaviour
         // Detect if the left mouse button is held down
         if (Input.GetMouseButton(0))
         {
-            holdCounter += Time.deltaTime; // Increment the hold counter
+            holdCounter += Time.deltaTime;
+            if (deleteAllButton)
+            {
+                delete_all_button.DisplayHolding(holdCounter / holdTime);
+            }
+
+            if (selectedFlower != null)
+            {
+                cursor_display.DisplayHolding(holdCounter / holdTime);
+                cursor_display.GotoPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+            
             if (holdCounter >= holdTime)
             {
                 // If held for long enough, delete the flower and reset
@@ -63,6 +82,8 @@ public class PlayerController : MonoBehaviour
                 }
                 
                 holdCounter = 0f;
+                delete_all_button.DisplayHolding(0);
+                cursor_display.DisplayHolding(0);
             }
         }
 
@@ -94,6 +115,8 @@ public class PlayerController : MonoBehaviour
             swipeDetected = false;
             deleteAllButton = false;
             holdCounter = 0f; // Reset the hold counter
+            delete_all_button.DisplayHolding(0);    
+            cursor_display.DisplayHolding(0);
         }
     }
 }

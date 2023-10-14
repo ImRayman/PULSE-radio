@@ -58,7 +58,7 @@ public class LovenderVisualController : MonoBehaviour
     {
         if(animating) return;
         
-        float currentScale = Mathf.Lerp(1, current_scale * 0.3f, timer);
+        float currentScale = Mathf.Lerp(1, current_scale * 0.35f, timer);
         flower_patel.transform.localScale = new Vector3(currentScale, currentScale, currentScale);
     }
 
