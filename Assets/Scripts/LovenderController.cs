@@ -14,7 +14,27 @@ public class LovenderController : MonoBehaviour
 
     public LovenderVisualController lovenderVisualController; // Reference to the visual controller
     public CapsuleCollider2D collider;
-    
+
+    private void Awake()
+    {
+        Globals.change_flower_timer.AddListener(SetTimer);
+    }
+
+    private void OnEnable()
+    {
+        SetTimer(Globals.flower_timer);
+    }
+
+    private void OnDestroy()
+    {
+        Globals.change_flower_timer.RemoveListener(SetTimer);
+    }
+
+    private void SetTimer(float timer)
+    {
+        this.timer = timer;
+    }
+
     void Start()
     {
         if (sounds.Count > 0)
