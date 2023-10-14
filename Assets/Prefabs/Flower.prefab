@@ -59,20 +59,38 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: -0.15003145
+      outSlope: -0.15003145
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.38645777
+    - serializedVersion: 3
+      time: 0.49138722
+      value: 0.9929496
+      inSlope: 1.7194092
+      outSlope: 1.7194092
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.23440704
+    - serializedVersion: 3
+      time: 0.80727637
+      value: 0.93322766
+      inSlope: -0.9033871
+      outSlope: -0.9033871
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.24548693
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 1.069975
+      outSlope: 1.069975
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.4613069
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -728,7 +746,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.2, y: 1}
   m_Direction: 0
 --- !u!1 &6613763047626875943
 GameObject:
