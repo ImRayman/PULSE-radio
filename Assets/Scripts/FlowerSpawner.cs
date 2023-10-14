@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FlowerSpawner : MonoBehaviour
@@ -7,12 +9,18 @@ public class FlowerSpawner : MonoBehaviour
     
     public void DeleteAllFlowers()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        StartCoroutine(DeleteAllAnim());
+    }
+
+    private IEnumerator DeleteAllAnim()
+    {
+        foreach (LovenderController flower in transform.GetComponentsInChildren<LovenderController>().Reverse())
         {
-            Destroy(transform.GetChild(i).gameObject);
+            flower.DeleteFlower();
+            yield return new WaitForSeconds(0.05f);
         }
     }
-    
+
     public void SpawnFlower(Vector2 position)
     {
         // The position should be converted from screen space to world space, if the position passed isn't already in world space

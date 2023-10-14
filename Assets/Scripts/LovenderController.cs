@@ -13,7 +13,8 @@ public class LovenderController : MonoBehaviour
     private int currentSoundIndex = 0;
 
     public LovenderVisualController lovenderVisualController; // Reference to the visual controller
-
+    public CapsuleCollider2D collider;
+    
     void Start()
     {
         if (sounds.Count > 0)
@@ -30,6 +31,17 @@ public class LovenderController : MonoBehaviour
         lovenderVisualController.PlaySpawn(timer); // Pass the same timer for the visual effect
     }
 
+    private void UpdateColliderHeight()
+    {
+        // Calculate the height based on the difference between the current child's local position and the initial position.
+        float height = Mathf.Abs(lovenderVisualController.transform.localPosition.y) * 2 * 0.3f + 0.25f;
+
+        // Update the collider size while keeping the bottom in place.
+        float yOffset = height / 2 + 0;
+        collider.size = new Vector2(collider.size.x, height);
+        collider.offset = new Vector2(collider.offset.x, yOffset);
+    }
+    
     private IEnumerator StartFlower()
     {
         while (true)
@@ -77,6 +89,7 @@ public class LovenderController : MonoBehaviour
             // Visual indication that the sound has changed - next
             lovenderVisualController.FlowerUp(); // Flower jumps up
             lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
+            UpdateColliderHeight();
         }
         // else do nothing if we're at the last sound
     }
@@ -92,6 +105,7 @@ public class LovenderController : MonoBehaviour
             // Visual indication that the sound has changed - previous
             lovenderVisualController.FlowerDown(); // Flower jumps down
             lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
+            UpdateColliderHeight();
         }
         // else do nothing if we're at the first sound
     }
@@ -99,15 +113,19 @@ public class LovenderController : MonoBehaviour
     
     public void HandleLongPress()
     {
-        // Perform any necessary cleanup, like stopping audio, animations, etc.
-        
-        // Then destroy the flower
-        Destroy(transform.parent.parent.gameObject);
+        DeleteFlower();
+    }
+
+    public void DeleteFlower()
+    {
+        lovenderVisualController.PlayDeleteAnim();
+        Destroy(gameObject,0.5f);
     }
 
     private void SetFlowerHeightAndColorToAudioIx()
     {
         lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
         lovenderVisualController.SetHeight(currentSoundIndex);
+        UpdateColliderHeight();
     }
 }

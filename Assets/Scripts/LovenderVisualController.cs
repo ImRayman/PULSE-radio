@@ -5,6 +5,7 @@ using UnityEngine.Rendering;
 
 public class LovenderVisualController : MonoBehaviour
 {
+    public Animator animator;
     public SortingGroup sorting_group;
     public GameObject flower_head;
     public GameObject flower_head_scale;
@@ -14,6 +15,7 @@ public class LovenderVisualController : MonoBehaviour
     public float jumpHeight = 0.5f; // Define how high the flower head jumps
     public float jumpScale = 0.2f; // Define how high the flower head jumps
     public float scale_min, scale_max;
+    private float current_scale;
     private bool animating = false;
 
     public void SetColor(Color color,int num)
@@ -25,6 +27,11 @@ public class LovenderVisualController : MonoBehaviour
     {
         sorting_group.sortingOrder = Mathf.RoundToInt(transform.parent.transform.position.y) * -1;
         StartCoroutine(ScaleFlower(flower_cooldown_obj, timer, 1, 0)); // Scale down over time
+    }
+
+    public void PlayDeleteAnim()
+    {
+        animator.SetTrigger("Delete");
     }
 
     public void SetHeight(int num)
@@ -51,7 +58,7 @@ public class LovenderVisualController : MonoBehaviour
     {
         if(animating) return;
         
-        float currentScale = Mathf.Lerp(1, 0, timer);
+        float currentScale = Mathf.Lerp(1, current_scale * 0.3f, timer);
         flower_patel.transform.localScale = new Vector3(currentScale, currentScale, currentScale);
     }
 
@@ -123,7 +130,8 @@ public class LovenderVisualController : MonoBehaviour
     private void ScaleHead(float endScale)
     {
         float clamped = Mathf.Clamp(endScale, scale_min, scale_max);
-        flower_head_scale.transform.localScale = new Vector3(clamped, clamped, 0);
+        current_scale = clamped;
+        flower_head_scale.transform.localScale = new Vector3(current_scale, current_scale, 0);
     }
 
 }
