@@ -133,5 +133,11 @@ public class LovenderVisualController : MonoBehaviour
         current_scale = clamped;
         flower_head_scale.transform.localScale = new Vector3(current_scale, current_scale, 0);
     }
+    
+    public void PositionHead(float distance)
+    {
+        Vector2 pos = Vector3.Lerp(new Vector3(0,2,0), new Vector3(0,4,0), distance);
+        flower_head.transform.localPosition = pos;
+    }
 
 }
