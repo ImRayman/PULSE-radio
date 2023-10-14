@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using Random = UnityEngine.Random;
 
 public class LovenderController : MonoBehaviour
@@ -13,21 +14,34 @@ public class LovenderController : MonoBehaviour
     private int currentSoundIndex = 0;
 
     public LovenderVisualController lovenderVisualController;
-    public CapsuleCollider2D collider;
+    public BoxCollider2D boxCollider;
     
     private bool isDragging = false;
-    public float dragStepSize = 50f; // Change this value to adjust sensitivity
-    private float accumulatedDrag = 0f; // Accumulates drag distance across frames
 
+    public float thresholdDistance = 20f; // The required change in Y position to change the sound index
+
+    private float initialChildY;
+    private float initialColliderSizeY;
+    private float initialColliderOffsetY;
 
     private void Awake()
     {
         Globals.change_flower_timer.AddListener(SetTimer);
+        
+        initialChildY = lovenderVisualController.transform.position.y;
+        initialColliderSizeY = boxCollider.size.y;
+        initialColliderOffsetY = boxCollider.offset.y;
     }
 
     private void OnEnable()
     {
         SetTimer(Globals.flower_timer);
+        if (sounds.Count > 0)
+        {
+            currentSoundIndex = Random.Range(0, sounds.Count-1);
+            audioSource.clip = sounds[currentSoundIndex];
+            SetFlowerHeightAndColorToAudioIx();
+        }
     }
 
     private void OnDestroy()
@@ -42,66 +56,58 @@ public class LovenderController : MonoBehaviour
 
     void Start()
     {
-        if (sounds.Count > 0)
-        {
-            currentSoundIndex = Random.Range(0, sounds.Count);
-            audioSource.clip = sounds[currentSoundIndex];
-            SetFlowerHeightAndColorToAudioIx();
-            audioSource.Play();
-        }
-
+        UpdateCollider();
+        audioSource.Play();
         StartCoroutine(StartFlower());
+        StartCoroutine(DelayedCollider());
         
         // Visual indication that the flower has spawned
         lovenderVisualController.PlaySpawn(timer); // Pass the same timer for the visual effect
     }
 
-    public void HandleDrag(ref Vector3 startTouchPosition)
+    private IEnumerator DelayedCollider()
     {
-        Vector3 currentPos = Input.mousePosition;
+        yield return new WaitForSeconds(0.18f);
+        UpdateCollider();
+    }
 
-        // Calculate the absolute drag distance as before
-        float absoluteDragDistance = Vector3.Distance(startTouchPosition, currentPos);
-        
-        float dragDirection = currentPos.y > startTouchPosition.y ? 1f : -1f;
-
-        // Apply the direction to the drag distance
-        float dragDistance = absoluteDragDistance * dragDirection;
-    
-        // Add the current frame's drag distance to the accumulator
-        accumulatedDrag += dragDistance;
-
-        // Calculate the number of steps in the total accumulated drag
-        int dragSteps = (int)(accumulatedDrag / dragStepSize);
-
-        // If there's no change in steps, do nothing further in this frame
-        if (dragSteps == 0)
+    public void HandleDrag(Vector3 currentPos,ref Vector3 lastPosition)
+    {
+        // If the player has stopped dragging, or this is the first frame of the drag, update lastPosition and exit
+        if (currentPos == lastPosition)
         {
+            lastPosition = currentPos;
             return;
         }
 
-        // Calculate the new sound index, clamping it within valid bounds
-        int newSoundIndex = currentSoundIndex + dragSteps;
+        // Check the distance moved in the Y direction
+        float deltaY = currentPos.y - lastPosition.y;
+
+        // Determine the direction based on the change in Y position
+        float dragDirection = deltaY > 0 ? 1f : -1f;
+
+        // Check if the movement exceeds the threshold distance
+        if (Mathf.Abs(deltaY) < thresholdDistance)
+        {
+            return; // Not enough movement to change the sound
+        }
+
+        // Calculate the new sound index
+        int newSoundIndex = currentSoundIndex + (int)dragDirection;
         newSoundIndex = Mathf.Clamp(newSoundIndex, 0, sounds.Count - 1);
-
-        // Check if we've hit an edge and the direction of the drag
-        if ((newSoundIndex == 0 && dragDirection < 0) || (newSoundIndex == sounds.Count - 1 && dragDirection > 0))
+        
+        // If we're at an edge, don't allow the index to continue past it
+        if (currentSoundIndex != newSoundIndex)
         {
-            // We've hit an edge, reset the start position
-            startTouchPosition = currentPos;
-            accumulatedDrag = 0; // Reset the accumulated drag as we're starting fresh
-            return; // Exit the method here, no need to proceed further
-        }
-
-        // If the sound index has changed, update the sound
-        if (newSoundIndex != currentSoundIndex)
-        {
+            // Update the sound index
             currentSoundIndex = newSoundIndex;
-            UpdateSound(); // Adjust this method if necessary
-        }
 
-        // Reset the accumulated drag by the amount that's been consumed
-        accumulatedDrag -= dragSteps * dragStepSize;
+            // Update the sound if we have a new sound index
+            UpdateSound();
+
+            // Since the player moved more than the threshold and it resulted in a sound change, we update lastPosition
+            lastPosition = currentPos;
+        }
     }
 
     private void UpdateSound()
@@ -113,19 +119,8 @@ public class LovenderController : MonoBehaviour
 
             lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
             lovenderVisualController.PositionHead(currentSoundIndex);
-            UpdateColliderHeight();
+            UpdateCollider();
         }
-    }
-
-    private void UpdateColliderHeight()
-    {
-        // Calculate the height based on the difference between the current child's local position and the initial position.
-        float height = Mathf.Abs(lovenderVisualController.transform.localPosition.y) * 2 * 0.3f + 0.25f;
-
-        // Update the collider size while keeping the bottom in place.
-        float yOffset = height / 2 - 0.5f;
-        collider.size = new Vector2(collider.size.x, height);
-        collider.offset = new Vector2(collider.offset.x, yOffset);
     }
     
     private IEnumerator StartFlower()
@@ -160,40 +155,6 @@ public class LovenderController : MonoBehaviour
             lovenderVisualController.FlowerSound(); // Indicate that a sound is played
         }
     }
-
-    public void NextSound()
-    {
-        if (sounds.Count > 0 && currentSoundIndex < sounds.Count - 1) // Check if not already at the last sound
-        {
-            currentSoundIndex++;
-            audioSource.clip = sounds[currentSoundIndex];
-            audioSource.Play();
-
-            // Visual indication that the sound has changed - next
-            lovenderVisualController.FlowerUp(); // Flower jumps up
-            lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
-            UpdateColliderHeight();
-        }
-        // else do nothing if we're at the last sound
-    }
-
-    public void PreviousSound()
-    {
-        if (sounds.Count > 0 && currentSoundIndex > 0) // Check if not already at the first sound
-        {
-            currentSoundIndex--;
-            audioSource.clip = sounds[currentSoundIndex];
-            audioSource.Play();
-
-            // Visual indication that the sound has changed - previous
-            lovenderVisualController.FlowerDown(); // Flower jumps down
-            lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
-            UpdateColliderHeight();
-        }
-        // else do nothing if we're at the first sound
-    }
-
-    
     public void HandleLongPress()
     {
         DeleteFlower();
@@ -209,6 +170,14 @@ public class LovenderController : MonoBehaviour
     {
         lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
         lovenderVisualController.SetHeight(currentSoundIndex);
-        UpdateColliderHeight();
+    }
+    
+    private void UpdateCollider()
+    {
+        float deltaY = lovenderVisualController.transform.position.y - initialChildY;
+
+        // Adjust the collider's size and offset based on the change in Y position
+        boxCollider.size = new Vector2(boxCollider.size.x, initialColliderSizeY + deltaY);
+        boxCollider.offset = new Vector2(boxCollider.offset.x, initialColliderOffsetY + deltaY / 2);
     }
 }

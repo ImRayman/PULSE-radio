@@ -5,7 +5,7 @@ using UnityEngine;
 public class FlowerLine : MonoBehaviour
 {
     public GameObject flowerHead; // Assign the flower head in the inspector
-
+    
     private LineRenderer lineRenderer;
     private Vector3 fixedPointLocal = Vector3.zero;
     private Vector3 fixedPointWorld;

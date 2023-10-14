@@ -555,7 +555,7 @@ GameObject:
   - component: {fileID: 3544970063430747801}
   - component: {fileID: 3819525091331565227}
   - component: {fileID: 5817308128738958067}
-  - component: {fileID: 7570139051855841405}
+  - component: {fileID: 6106405568364788738}
   m_Layer: 0
   m_Name: Flower
   m_TagString: Flower
@@ -635,7 +635,8 @@ MonoBehaviour:
   audioSource: {fileID: 5817308128738958067}
   timer: 4
   lovenderVisualController: {fileID: 3703560817528570463}
-  collider: {fileID: 7570139051855841405}
+  boxCollider: {fileID: 6106405568364788738}
+  thresholdDistance: 20
 --- !u!82 &5817308128738958067
 AudioSource:
   m_ObjectHideFlags: 0
@@ -732,8 +733,8 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!70 &7570139051855841405
-CapsuleCollider2D:
+--- !u!61 &6106405568364788738
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -745,9 +746,19 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.2, y: 1}
-  m_Direction: 0
+  m_Offset: {x: 0, y: 0.7}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.7}
+  m_EdgeRadius: 0.09
 --- !u!1 &6613763047626875943
 GameObject:
   m_ObjectHideFlags: 0
