@@ -9,9 +9,15 @@ public class PlayerController : MonoBehaviour
     private LovenderController selectedFlower = null;
     private Vector2 startTouchPosition;
     private bool swipeDetected = false;
+    private bool deleteAllButton = false;
     private float holdCounter = 0f; // Tracks the duration of the hold
 
     void Update()
+    {
+        FlowerInteractions();
+    }
+
+    private void FlowerInteractions()
     {
         // Detect if the left mouse button is pressed down
         if (Input.GetMouseButtonDown(0))
@@ -27,6 +33,10 @@ public class PlayerController : MonoBehaviour
                 // If a flower (Lovender) is clicked, set it as the selected flower
                 selectedFlower = hit.collider.gameObject.GetComponent<LovenderController>();
             }
+            else if (hit.collider != null && hit.collider.gameObject.tag == "DeleteButton")
+            {
+                deleteAllButton = true;
+            }
             else if (!EventSystem.current.IsPointerOverGameObject()) // Check if not clicking on UI
             {
                 // If we're not clicking on a flower, spawn one at the click/tap position
@@ -35,14 +45,23 @@ public class PlayerController : MonoBehaviour
         }
 
         // Detect if the left mouse button is held down
-        if (Input.GetMouseButton(0) && selectedFlower != null)
+        if (Input.GetMouseButton(0))
         {
             holdCounter += Time.deltaTime; // Increment the hold counter
             if (holdCounter >= holdTime)
             {
                 // If held for long enough, delete the flower and reset
-                selectedFlower.HandleLongPress();
-                selectedFlower = null;
+                if (selectedFlower != null)
+                {
+                    selectedFlower.HandleLongPress();
+                    selectedFlower = null;
+                }
+                else if (deleteAllButton)
+                {
+                    flowerSpawner.DeleteAllFlowers();
+                    deleteAllButton = false;
+                }
+                
                 holdCounter = 0f;
             }
         }
@@ -69,15 +88,11 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }
-            else if (selectedFlower != null && !swipeDetected && holdCounter < holdTime) // Simple tap and not a long press
-            {
-                // Tell the flower to change to the next sound
-                selectedFlower.NextSound();
-            }
 
             // Reset variables
             selectedFlower = null;
             swipeDetected = false;
+            deleteAllButton = false;
             holdCounter = 0f; // Reset the hold counter
         }
     }
