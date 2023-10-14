@@ -80,9 +80,6 @@ public class LovenderController : MonoBehaviour
                 // Increment the time by the time passed since the last frame
                 time += Time.deltaTime; // Time.deltaTime is the time in seconds it took to complete the last frame
             }
-
-            // After the cooldown, you might want to wait for a certain time before the next sound is played again
-            // If so, add another yield return new WaitForSeconds(waitDuration); here
         }
     }
 
