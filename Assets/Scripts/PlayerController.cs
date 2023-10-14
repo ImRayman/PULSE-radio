@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public float holdTime = 2f; // Time to hold before a flower is deleted
 
     private LovenderController selectedFlower = null;
-    private Vector2 startTouchPosition;
+    private Vector3 startTouchPosition;
     private bool swipeDetected = false;
     private bool deleteAllButton = false;
     private float holdCounter = 0f; // Tracks the duration of the hold
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
 
     private void FlowerDragging()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isDraggingFlower)
         {
             startTouchPosition = Input.mousePosition;
 
@@ -58,39 +58,50 @@ public class PlayerController : MonoBehaviour
         }
         
         // Detect if the left mouse button is held down
-        if (Input.GetMouseButton(0) && dragDistance < 0.1f)
+        if (Input.GetMouseButton(0))
         {
-            holdCounter += Time.deltaTime;
-
-            if (selectedFlower != null && holdCounter / holdTime > 0.2f)
-            {
-                cursor_display.DisplayHolding(holdCounter / holdTime);
-                cursor_display.GotoPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            }
+            dragDistance = Vector3.Distance(startTouchPosition, Input.mousePosition);
             
-            if (holdCounter >= holdTime)
+            if(dragDistance < 0.1f)
             {
-                if (selectedFlower != null)
-                {
-                    selectedFlower.HandleLongPress();
-                    selectedFlower = null;
-                }
-
-                holdCounter = 0f;
-                isDraggingFlower = false;
-                cursor_display.DisplayHolding(0);
+                HandleDelete();
             }
-        }
-        else
-        {
-            cursor_display.DisplayHolding(0);
+            else
+            {
+                cursor_display.DisplayHolding(0);
+
+            }
         }
 
         // If we're dragging, don't trigger other global interactions
         if (isDraggingFlower)
         {
-            dragDistance = Vector3.Distance(startTouchPosition, Input.mousePosition);
-            selectedFlower.HandleDrag(dragDistance);
+            selectedFlower.HandleDrag(ref startTouchPosition);
+        }
+
+    }
+
+    private void HandleDelete()
+    {
+        holdCounter += Time.deltaTime;
+
+        if (selectedFlower != null && holdCounter / holdTime > 0.2f)
+        {
+            cursor_display.DisplayHolding(holdCounter / holdTime);
+            cursor_display.GotoPosition(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
+                
+        if (holdCounter >= holdTime)
+        {
+            if (selectedFlower != null)
+            {
+                selectedFlower.HandleLongPress();
+                selectedFlower = null;
+            }
+
+            holdCounter = 0f;
+            isDraggingFlower = false;
+            cursor_display.DisplayHolding(0);
         }
     }
 
@@ -212,8 +223,8 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            Vector2 endTouchPosition = Input.mousePosition;
-            Vector2 swipeDelta = endTouchPosition - startTouchPosition;
+            Vector3 endTouchPosition = Input.mousePosition;
+            Vector3 swipeDelta = endTouchPosition - startTouchPosition;
 
             // Check if the swipe gesture is vertical and significant enough to be considered a swipe
             if (Mathf.Abs(swipeDelta.y) > Mathf.Abs(swipeDelta.x) && swipeDelta.magnitude > 100f)

@@ -16,7 +16,9 @@ public class LovenderController : MonoBehaviour
     public CapsuleCollider2D collider;
     
     private bool isDragging = false;
-    private float maxDragDistance = 100f; 
+    public float dragStepSize = 50f; // Change this value to adjust sensitivity
+    private float accumulatedDrag = 0f; // Accumulates drag distance across frames
+
 
     private void Awake()
     {
@@ -53,27 +55,56 @@ public class LovenderController : MonoBehaviour
         // Visual indication that the flower has spawned
         lovenderVisualController.PlaySpawn(timer); // Pass the same timer for the visual effect
     }
-    
-    public void HandleDrag(float dragDistance)
+
+    public void HandleDrag(ref Vector3 startTouchPosition)
     {
-        // Calculate the drag distance
+        Vector3 currentPos = Input.mousePosition;
 
-        // Calculate the drag percentage
-        float dragPercentage = Mathf.Clamp01(dragDistance / maxDragDistance);
+        // Calculate the absolute drag distance as before
+        float absoluteDragDistance = Vector3.Distance(startTouchPosition, currentPos);
+        
+        float dragDirection = currentPos.y > startTouchPosition.y ? 1f : -1f;
 
-        // Determine the sound index based on drag percentage
-        int soundIndex = (int)(dragPercentage * sounds.Count);
-        soundIndex = Mathf.Clamp(soundIndex, 0, sounds.Count - 1);
+        // Apply the direction to the drag distance
+        float dragDistance = absoluteDragDistance * dragDirection;
+    
+        // Add the current frame's drag distance to the accumulator
+        accumulatedDrag += dragDistance;
+
+        // Calculate the number of steps in the total accumulated drag
+        int dragSteps = (int)(accumulatedDrag / dragStepSize);
+
+        // If there's no change in steps, do nothing further in this frame
+        if (dragSteps == 0)
+        {
+            return;
+        }
+
+        // Calculate the new sound index, clamping it within valid bounds
+        int newSoundIndex = currentSoundIndex + dragSteps;
+        newSoundIndex = Mathf.Clamp(newSoundIndex, 0, sounds.Count - 1);
+
+        // Check if we've hit an edge and the direction of the drag
+        if ((newSoundIndex == 0 && dragDirection < 0) || (newSoundIndex == sounds.Count - 1 && dragDirection > 0))
+        {
+            // We've hit an edge, reset the start position
+            startTouchPosition = currentPos;
+            accumulatedDrag = 0; // Reset the accumulated drag as we're starting fresh
+            return; // Exit the method here, no need to proceed further
+        }
 
         // If the sound index has changed, update the sound
-        if (soundIndex != currentSoundIndex)
+        if (newSoundIndex != currentSoundIndex)
         {
-            currentSoundIndex = soundIndex;
-            UpdateSound(dragPercentage);
+            currentSoundIndex = newSoundIndex;
+            UpdateSound(); // Adjust this method if necessary
         }
+
+        // Reset the accumulated drag by the amount that's been consumed
+        accumulatedDrag -= dragSteps * dragStepSize;
     }
-    
-    private void UpdateSound(float dragPercentage)
+
+    private void UpdateSound()
     {
         if (sounds.Count > 0)
         {
@@ -81,7 +112,7 @@ public class LovenderController : MonoBehaviour
             audioSource.Play();
 
             lovenderVisualController.SetColor(sound_colors[currentSoundIndex],currentSoundIndex);
-            lovenderVisualController.PositionHead(dragPercentage);
+            lovenderVisualController.PositionHead(currentSoundIndex);
             UpdateColliderHeight();
         }
     }
