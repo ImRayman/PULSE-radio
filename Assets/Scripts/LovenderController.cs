@@ -26,7 +26,8 @@ public class LovenderController : MonoBehaviour
 
     private void Awake()
     {
-        Globals.change_flower_timer.AddListener(SetTimer);
+        //Globals.change_flower_timer.AddListener(SetTimer);
+        Globals.change_flower_pitch.AddListener(SetPitch);
         
         initialChildY = lovenderVisualController.transform.position.y;
         initialColliderSizeY = boxCollider.size.y;
@@ -36,6 +37,7 @@ public class LovenderController : MonoBehaviour
     private void OnEnable()
     {
         SetTimer(Globals.flower_timer);
+        SetPitch(Globals.flower_pitch);
         if (sounds.Count > 0)
         {
             currentSoundIndex = Random.Range(0, sounds.Count-1);
@@ -46,7 +48,9 @@ public class LovenderController : MonoBehaviour
 
     private void OnDestroy()
     {
-        Globals.change_flower_timer.RemoveListener(SetTimer);
+        //Globals.change_flower_timer.RemoveListener(SetTimer);
+        Globals.change_flower_pitch.RemoveListener(SetPitch);
+
     }
 
     private void SetTimer(float timer)
@@ -179,5 +183,10 @@ public class LovenderController : MonoBehaviour
         // Adjust the collider's size and offset based on the change in Y position
         boxCollider.size = new Vector2(boxCollider.size.x, initialColliderSizeY + deltaY);
         boxCollider.offset = new Vector2(boxCollider.offset.x, initialColliderOffsetY + deltaY / 2);
+    }
+
+    private void SetPitch(float pitch)
+    {
+        audioSource.pitch = pitch;
     }
 }

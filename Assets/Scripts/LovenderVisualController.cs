@@ -15,6 +15,7 @@ public class LovenderVisualController : MonoBehaviour
     public float jumpHeight = 0.5f; // Define how high the flower head jumps
     public float jumpScale = 0.2f; // Define how high the flower head jumps
     public float scale_min, scale_max;
+    public float hight_min = 1;
     private float current_scale;
     private bool animating = false;
 
@@ -36,22 +37,12 @@ public class LovenderVisualController : MonoBehaviour
 
     public void SetHeight(int num)
     {
-        flower_head.transform.localPosition = new Vector3(0,2 + jumpHeight * num,0);
+        flower_head.transform.localPosition = new Vector3(0,hight_min + jumpHeight * num,0);
     }
 
     public void FlowerSound()
     {
         StartCoroutine(ScaleFlowerWithCurve(flower_cooldown_obj, 0.2f, flowerSoundCurve)); // Scale up quickly using animation curve
-    }
-
-    public void FlowerUp()
-    {
-        StartCoroutine(FlowerUp(flower_head, jumpHeight)); // You can adjust the height value
-    }
-
-    public void FlowerDown()
-    {
-        StartCoroutine(FlowerDown(flower_head, jumpHeight)); // You can adjust the height value
     }
 
     public void CooldownPatels(float timer)
@@ -97,36 +88,6 @@ public class LovenderVisualController : MonoBehaviour
         animating = false;
     }
 
-    IEnumerator FlowerUp(GameObject target, float height)
-    {
-        Vector3 startPosition = target.transform.localPosition;
-        Vector3 endPosition = new Vector3(startPosition.x, startPosition.y + height, startPosition.z);
-        
-        float timeToMove = 0.2f;
-        for (float t = 0; t <= 1; t += Time.deltaTime / timeToMove)
-        {
-            target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
-            yield return null;
-        }
-
-        target.transform.localPosition = endPosition; // Ensure it's at the final position
-    }
-
-    IEnumerator FlowerDown(GameObject target, float height)
-    {
-        Vector3 startPosition = target.transform.localPosition;
-        Vector3 endPosition = new Vector3(startPosition.x, startPosition.y - height, startPosition.z); // Moving down by 'height'
-
-        float timeToMove = 0.2f;
-        for (float t = 0; t <= 1; t += Time.deltaTime / timeToMove)
-        {
-            target.transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
-            yield return null;
-        }
-
-        target.transform.localPosition = endPosition; // Ensure it's at the final position
-    }
-
     private void ScaleHead(float endScale)
     {
         float clamped = Mathf.Clamp(endScale, scale_min, scale_max);
@@ -136,7 +97,7 @@ public class LovenderVisualController : MonoBehaviour
     
     public void PositionHead(int ix)
     {
-        Vector2 pos = new Vector2(0, 2 + (jumpHeight * ix));
+        Vector2 pos = new Vector2(0, hight_min + (jumpHeight * ix));
         flower_head.transform.localPosition = pos;
     }
 

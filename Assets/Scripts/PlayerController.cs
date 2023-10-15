@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 
         if (enable_delete)
         {
-            if (dragDistance > 0.1f) // Assuming this is some threshold for drag detection
+            if (dragDistance > 0.2f) // Assuming this is some threshold for drag detection
             {
                 enable_delete = false;
             }

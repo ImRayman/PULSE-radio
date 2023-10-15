@@ -99,6 +99,7 @@ MonoBehaviour:
   jumpScale: 0.1
   scale_min: 0.2
   scale_max: 1.2
+  hight_min: 0.5
 --- !u!210 &8814062663612477706
 SortingGroup:
   m_ObjectHideFlags: 0
