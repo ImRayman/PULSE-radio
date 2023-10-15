@@ -95,7 +95,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  jumpHeight: 0.5
+  jumpHeight: 0.2
   jumpScale: 0.1
   scale_min: 0.2
   scale_max: 1.2
@@ -623,15 +623,25 @@ MonoBehaviour:
   - {r: 0, g: 0.5019608, b: 1, a: 1}
   - {r: 0.7843138, g: 0.3803922, b: 1, a: 1}
   - {r: 1, g: 0.18823531, b: 0, a: 1}
+  - {r: 1, g: 0.18823531, b: 0, a: 1}
+  - {r: 1, g: 0.18823531, b: 0, a: 1}
+  - {r: 1, g: 0.18823531, b: 0, a: 1}
+  - {r: 1, g: 0.18823531, b: 0, a: 1}
+  - {r: 1, g: 0.18823531, b: 0, a: 1}
   sounds:
-  - {fileID: 8300000, guid: 6ed5597bd48d25c478087fb31d3e85b8, type: 3}
-  - {fileID: 8300000, guid: 551c913c15d5b7f4fba367cf86bfbf03, type: 3}
-  - {fileID: 8300000, guid: 7fa63a9c9b71945488d3e7101e2a8bcb, type: 3}
-  - {fileID: 8300000, guid: d7d5e1ecd2f582f4db71c67e29e3c97a, type: 3}
-  - {fileID: 8300000, guid: 29ebc14bbfb18204fa81f54039483019, type: 3}
-  - {fileID: 8300000, guid: 9a132d0473474e94182d754f26a3e01b, type: 3}
-  - {fileID: 8300000, guid: d5e56aced34981a4d96fc28969934080, type: 3}
-  - {fileID: 8300000, guid: 2060cf89526677644a29bf57326a889d, type: 3}
+  - {fileID: 8300000, guid: dbd4905f7a0b2504593c0e359c354842, type: 3}
+  - {fileID: 8300000, guid: a4f96f998f577844f96c23e5ea70425c, type: 3}
+  - {fileID: 8300000, guid: 85ee7b6f610bed5469745f9b837c93df, type: 3}
+  - {fileID: 8300000, guid: aa65370e0932ab04e8b368b9b36ccaed, type: 3}
+  - {fileID: 8300000, guid: 7b4b2107334bc0b409028a636a853f2f, type: 3}
+  - {fileID: 8300000, guid: b2ea1c079cab7574f97aa13728eaf3b8, type: 3}
+  - {fileID: 8300000, guid: 17032f922f9605248ad4c0795ceb9559, type: 3}
+  - {fileID: 8300000, guid: 0ac6bff40ecb1e9488c952e1bfd0ec45, type: 3}
+  - {fileID: 8300000, guid: 2eaa23e71dcad564daf5c41104c26f50, type: 3}
+  - {fileID: 8300000, guid: fb37f3e70b260db44970c76e42849218, type: 3}
+  - {fileID: 8300000, guid: 5e83b7afe54783341a686f84f6b7c0f3, type: 3}
+  - {fileID: 8300000, guid: 0984aaffb099d4848a6ff80466db009f, type: 3}
+  - {fileID: 8300000, guid: 7af1135bb419e614b99ec9c4c4254b37, type: 3}
   audioSource: {fileID: 5817308128738958067}
   timer: 4
   lovenderVisualController: {fileID: 3703560817528570463}
