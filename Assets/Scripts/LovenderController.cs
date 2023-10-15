@@ -75,7 +75,7 @@ public class LovenderController : MonoBehaviour
         UpdateCollider();
     }
 
-    public void HandleDrag(Vector3 currentPos,ref Vector3 lastPosition)
+    public void HandleDrag(Vector3 currentPos, ref Vector3 lastPosition)
     {
         // If the player has stopped dragging, or this is the first frame of the drag, update lastPosition and exit
         if (currentPos == lastPosition)
@@ -96,11 +96,11 @@ public class LovenderController : MonoBehaviour
             return; // Not enough movement to change the sound
         }
 
-        // Calculate the new sound index
+        // Calculate the new sound index without exceeding the boundaries
         int newSoundIndex = currentSoundIndex + (int)dragDirection;
         newSoundIndex = Mathf.Clamp(newSoundIndex, 0, sounds.Count - 1);
-        
-        // If we're at an edge, don't allow the index to continue past it
+
+        // If the index has changed, update the sound
         if (currentSoundIndex != newSoundIndex)
         {
             // Update the sound index
@@ -110,6 +110,12 @@ public class LovenderController : MonoBehaviour
             UpdateSound();
 
             // Since the player moved more than the threshold and it resulted in a sound change, we update lastPosition
+            lastPosition = currentPos;
+        }
+        else if (newSoundIndex == 0 || newSoundIndex == sounds.Count - 1)
+        {
+            // We're at the edge, so reset the lastPosition to the current position to avoid needing a larger drag
+            // This negates the 'invisible' increase/decrease while at the boundaries
             lastPosition = currentPos;
         }
     }
