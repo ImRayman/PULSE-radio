@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
+    [FormerlySerializedAs("ambiant_controller")] public AmbianceController ambianceController;
     public CursorDisplay cursor_display;
     public DeleteAllButton delete_all_button;
     public FlowerSpawner flowerSpawner;
@@ -19,7 +21,7 @@ public class PlayerController : MonoBehaviour
     private float dragDistance = 0;
     private Vector3 lastPosition = Vector3.zero;
 
-
+    
     private void Start()
     {
         cursor_display.DisplayHolding(0);
@@ -27,9 +29,48 @@ public class PlayerController : MonoBehaviour
     
     private void Update()
     {
+        SpawnFlower();
         UIInteractions();
         HandleFlowerInteraction();
     }
+
+    private void SpawnFlower()
+    {
+        // Handle touch input
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Touch touch = Input.GetTouch(i);
+
+                if (touch.phase == TouchPhase.Began)
+                {
+                    Vector3 worldPosition = Camera.main.ScreenToWorldPoint(touch.position);
+                    worldPosition.z = 0;
+
+                    RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
+
+                    if (!EventSystem.current.IsPointerOverGameObject(touch.fingerId) && hit.collider == null)
+                    {
+                        flowerSpawner.SpawnFlower(worldPosition);
+                    }
+                }
+            }
+        }
+        else if (Input.GetMouseButtonDown(0))// Handle mouse input
+        {
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            worldPosition.z = 0;
+
+            RaycastHit2D hit = Physics2D.Raycast(worldPosition, Vector2.zero);
+
+            if (!EventSystem.current.IsPointerOverGameObject() && hit.collider == null) 
+            {
+                flowerSpawner.SpawnFlower(worldPosition);
+            }
+        }
+    }
+
 
     private void HandleFlowerInteraction()
     {
@@ -136,19 +177,14 @@ public class PlayerController : MonoBehaviour
         {
             // Cast a ray to the mouse position
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-
-            if (hit.collider != null && hit.collider.gameObject.GetComponent<LovenderController>())
-            {
-                
-            }
-            else if (hit.collider != null && hit.collider.gameObject.tag == "DeleteButton")
+            
+            if (hit.collider != null && hit.collider.gameObject.tag == "DeleteButton")
             {
                 deleteAllButton = true;
             }
-            else if (!EventSystem.current.IsPointerOverGameObject()) // Check if not clicking on UI
+            else if (hit.collider != null && hit.collider.gameObject.tag == "AmbianceButton")
             {
-                // If we're not clicking on a flower, spawn one at the click/tap position
-                flowerSpawner.SpawnFlower(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+                ambianceController.NextAmbiance();
             }
         }
 
