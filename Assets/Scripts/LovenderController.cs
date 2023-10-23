@@ -40,7 +40,7 @@ public class LovenderController : MonoBehaviour
         SetPitch(Globals.flower_pitch);
         if (sounds.Count > 0)
         {
-            currentSoundIndex = Random.Range(0 + 3, (sounds.Count - 1) -2);
+            currentSoundIndex = Random.Range(4, (sounds.Count - 1) -2);
             audioSource.clip = sounds[currentSoundIndex];
             SetFlowerHeightAndColorToAudioIx();
         }
